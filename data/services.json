@@ -1,0 +1,52 @@
+[
+  {
+    "service": "gateway",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "auth-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "user-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "product-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "order-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "payment-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "inventory-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "shipping-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "notification-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  },
+  {
+    "service": "report-service",
+    "language": "Java",
+    "framework": "Spring Boot"
+  }
+]

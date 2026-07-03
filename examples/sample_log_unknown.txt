@@ -1,0 +1,1 @@
+2026-03-01T08:30:00Z ERROR [search-service] TLS handshake failed: certificate expired, downstream calls to elasticsearch bị từ chối, HTTP 503 tăng vọt

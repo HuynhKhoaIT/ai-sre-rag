@@ -1,0 +1,39 @@
+[
+  {
+    "id": "RB-001",
+    "title": "Redis timeout",
+    "rootCause": "Redis maxmemory reached",
+    "steps": [
+      "Check INFO MEMORY",
+      "Restart Redis",
+      "Increase maxmemory"
+    ]
+  },
+  {
+    "id": "RB-002",
+    "title": "PostgreSQL slow query",
+    "rootCause": "Missing index",
+    "steps": [
+      "EXPLAIN ANALYZE",
+      "Create index"
+    ]
+  },
+  {
+    "id": "RB-003",
+    "title": "CrashLoopBackOff",
+    "rootCause": "Bad configuration",
+    "steps": [
+      "kubectl logs",
+      "Rollback deployment"
+    ]
+  },
+  {
+    "id": "RB-004",
+    "title": "OOMKilled",
+    "rootCause": "Memory leak",
+    "steps": [
+      "Increase memory",
+      "Profile heap"
+    ]
+  }
+]

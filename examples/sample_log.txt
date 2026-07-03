@@ -1,0 +1,1 @@
+2026-02-15T10:00:00Z ERROR [payment-service] OOMKilled: memory limit exceeded, pod restart liên tục sau đợt tải cao

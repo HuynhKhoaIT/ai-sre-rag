@@ -1,0 +1,17 @@
+# Secrets / môi trường
+.env
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Build artifact (regenerate bằng: python -m ai_sre.cli ingest)
+index/
+
+# OS / editor
+.DS_Store
+Thumbs.db

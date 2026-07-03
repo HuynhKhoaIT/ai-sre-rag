@@ -1,0 +1,11 @@
+# Core
+openai>=1.40              # reasoning layer (Chat Completions) + optional embedding
+faiss-cpu>=1.7            # in-process vector store (PoC)
+rank-bm25>=0.2            # keyword branch for hybrid search
+numpy>=1.24
+python-dotenv>=1.0
+
+sentence-transformers>=2.2
+
+# UI de test truc quan (streamlit_app.py)
+streamlit>=1.30

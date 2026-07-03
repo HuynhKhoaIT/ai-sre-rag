@@ -1,0 +1,7 @@
+{
+  "service": "payment-service",
+  "environment": "prod",
+  "fired_at": "2026-02-15T10:00:00Z",
+  "symptom": "OOMKilled - pod payment-service bị kill do hết bộ nhớ, memory tăng cao, service restart liên tục.",
+  "context": "Nghi có memory leak sau đợt tải cao."
+}

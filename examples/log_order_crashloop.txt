@@ -1,0 +1,1 @@
+2026-02-20T03:40:00Z ERROR [order-service] CrashLoopBackOff: pod liên tục restart sau khi khởi động, readiness probe fail
