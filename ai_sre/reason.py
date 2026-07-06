@@ -79,6 +79,12 @@ def match_known_incident(docs: List[dict], threshold: float = MATCH_SCORE_THRESH
 
 
 def _client() -> OpenAI:
+    # Local (Ollama/LM Studio/vLLM…) qua endpoint OpenAI-compatible: set OPENAI_BASE_URL.
+    # Ollama: OPENAI_BASE_URL=http://localhost:11434/v1 (api_key tùy ý, không cần thật).
+    # Không set OPENAI_BASE_URL → dùng OpenAI cloud như cũ (đọc OPENAI_API_KEY từ môi trường).
+    base_url = os.getenv("OPENAI_BASE_URL")
+    if base_url:
+        return OpenAI(base_url=base_url, api_key=os.getenv("OPENAI_API_KEY", "ollama"))
     return OpenAI()  # đọc OPENAI_API_KEY từ môi trường
 
 
