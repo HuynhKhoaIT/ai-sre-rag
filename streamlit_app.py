@@ -73,8 +73,16 @@ threshold = st.sidebar.number_input(
     step=0.001,
     format="%.3f",
 )
-call_model = st.sidebar.checkbox("Gọi model chẩn đoán (OpenAI)", value=True)
-st.sidebar.caption(f"Model: **{reason.MODEL_DIAGNOSE}** · cần OPENAI_API_KEY")
+call_model = st.sidebar.checkbox("Gọi model chẩn đoán", value=True)
+backend = st.sidebar.radio("Backend LLM", ["Local (Ollama)", "Cloud (OpenAI)"], index=0)
+if backend.startswith("Local"):
+    llm_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+    llm_model = st.sidebar.text_input("Model", value=os.getenv("OLLAMA_MODEL", "qwen2.5:32b"))
+    st.sidebar.caption(f"Model: **{llm_model}** · local @ {llm_base_url}")
+else:
+    llm_base_url = None
+    llm_model = st.sidebar.text_input("Model", value=os.getenv("OPENAI_MODEL", "gpt-4o"))
+    st.sidebar.caption(f"Model: **{llm_model}** · cloud · cần OPENAI_API_KEY")
 
 # --- Main: nhập log -----------------------------------------------------------
 st.title("🩺 AI-SRE — Chẩn đoán sự cố từ log")
@@ -160,7 +168,16 @@ if run:
         alert_text = reason.format_alert(alert)
         try:
             usage_sink: dict = {}
-            st.write_stream(reason.diagnose_stream(alert_text, docs, known=known, usage_sink=usage_sink))
+            st.write_stream(
+                reason.diagnose_stream(
+                    alert_text,
+                    docs,
+                    known=known,
+                    usage_sink=usage_sink,
+                    model=llm_model,
+                    base_url=llm_base_url,
+                )
+            )
             u = usage_sink.get("usage")
             if u is not None:
                 st.caption(

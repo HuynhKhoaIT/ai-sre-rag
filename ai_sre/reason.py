@@ -78,11 +78,11 @@ def match_known_incident(docs: List[dict], threshold: float = MATCH_SCORE_THRESH
     return best
 
 
-def _client() -> OpenAI:
-    # Local (Ollama/LM Studio/vLLM…) qua endpoint OpenAI-compatible: set OPENAI_BASE_URL.
-    # Ollama: OPENAI_BASE_URL=http://localhost:11434/v1 (api_key tùy ý, không cần thật).
-    # Không set OPENAI_BASE_URL → dùng OpenAI cloud như cũ (đọc OPENAI_API_KEY từ môi trường).
-    base_url = os.getenv("OPENAI_BASE_URL")
+def _client(base_url: Optional[str] = None) -> OpenAI:
+    # Local (Ollama/LM Studio/vLLM…) qua endpoint OpenAI-compatible: truyền base_url
+    # (hoặc set env OPENAI_BASE_URL). Ollama: http://localhost:11434/v1 (api_key tùy ý).
+    # Không có base_url → dùng OpenAI cloud như cũ (đọc OPENAI_API_KEY từ môi trường).
+    base_url = base_url or os.getenv("OPENAI_BASE_URL")
     if base_url:
         return OpenAI(base_url=base_url, api_key=os.getenv("OPENAI_API_KEY", "ollama"))
     return OpenAI()  # đọc OPENAI_API_KEY từ môi trường
@@ -110,11 +110,17 @@ def _context_from_docs(docs: List[dict]) -> str:
     return "\n\n".join(lines)
 
 
-def diagnose(alert_text: str, docs: List[dict], known: bool = True):
+def diagnose(
+    alert_text: str,
+    docs: List[dict],
+    known: bool = True,
+    model: Optional[str] = None,
+    base_url: Optional[str] = None,
+):
     system = SYSTEM_DIAGNOSE_KNOWN if known else SYSTEM_DIAGNOSE_UNKNOWN
     user = f"## Tài liệu liên quan\n{_context_from_docs(docs)}\n\n{alert_text}{_INSTRUCTION}"
-    return _client().chat.completions.create(
-        model=MODEL_DIAGNOSE,
+    return _client(base_url).chat.completions.create(
+        model=model or MODEL_DIAGNOSE,
         messages=[
             {"role": "system", "content": system},
             {"role": "user", "content": user},
@@ -122,16 +128,24 @@ def diagnose(alert_text: str, docs: List[dict], known: bool = True):
     )
 
 
-def diagnose_stream(alert_text: str, docs: List[dict], known: bool = True, usage_sink: Optional[dict] = None):
+def diagnose_stream(
+    alert_text: str,
+    docs: List[dict],
+    known: bool = True,
+    usage_sink: Optional[dict] = None,
+    model: Optional[str] = None,
+    base_url: Optional[str] = None,
+):
     """Như diagnose() nhưng STREAM: yield từng đoạn text ngay khi model sinh ra.
 
     Dùng cho UI để render dần, không phải đợi hết. Nếu truyền usage_sink (dict),
     token usage (khi server trả về ở chunk cuối) được ghi vào usage_sink['usage'].
+    model/base_url: override runtime (vd chọn Cloud/Local trên UI); None = theo env.
     """
     system = SYSTEM_DIAGNOSE_KNOWN if known else SYSTEM_DIAGNOSE_UNKNOWN
     user = f"## Tài liệu liên quan\n{_context_from_docs(docs)}\n\n{alert_text}{_INSTRUCTION}"
-    stream = _client().chat.completions.create(
-        model=MODEL_DIAGNOSE,
+    stream = _client(base_url).chat.completions.create(
+        model=model or MODEL_DIAGNOSE,
         messages=[
             {"role": "system", "content": system},
             {"role": "user", "content": user},
