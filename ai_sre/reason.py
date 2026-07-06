@@ -122,6 +122,32 @@ def diagnose(alert_text: str, docs: List[dict], known: bool = True):
     )
 
 
+def diagnose_stream(alert_text: str, docs: List[dict], known: bool = True, usage_sink: Optional[dict] = None):
+    """Như diagnose() nhưng STREAM: yield từng đoạn text ngay khi model sinh ra.
+
+    Dùng cho UI để render dần, không phải đợi hết. Nếu truyền usage_sink (dict),
+    token usage (khi server trả về ở chunk cuối) được ghi vào usage_sink['usage'].
+    """
+    system = SYSTEM_DIAGNOSE_KNOWN if known else SYSTEM_DIAGNOSE_UNKNOWN
+    user = f"## Tài liệu liên quan\n{_context_from_docs(docs)}\n\n{alert_text}{_INSTRUCTION}"
+    stream = _client().chat.completions.create(
+        model=MODEL_DIAGNOSE,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+        stream=True,
+        stream_options={"include_usage": True},
+    )
+    for chunk in stream:
+        if chunk.choices:
+            delta = chunk.choices[0].delta.content
+            if delta:
+                yield delta
+        if usage_sink is not None and getattr(chunk, "usage", None):
+            usage_sink["usage"] = chunk.usage
+
+
 def diagnose_and_print(alert_text: str, docs: List[dict], known: bool = True) -> None:
     resp = diagnose(alert_text, docs, known=known)
     print(resp.choices[0].message.content)

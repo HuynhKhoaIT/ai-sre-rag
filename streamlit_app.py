@@ -159,11 +159,13 @@ if run:
     else:
         alert_text = reason.format_alert(alert)
         try:
-            with st.spinner("Đang gọi model…"):
-                resp = reason.diagnose(alert_text, docs, known=known)
-            st.markdown(resp.choices[0].message.content)
-            u = resp.usage
-            st.caption(f"[usage] prompt={u.prompt_tokens} · completion={u.completion_tokens} · total={u.total_tokens}")
+            usage_sink: dict = {}
+            st.write_stream(reason.diagnose_stream(alert_text, docs, known=known, usage_sink=usage_sink))
+            u = usage_sink.get("usage")
+            if u is not None:
+                st.caption(
+                    f"[usage] prompt={u.prompt_tokens} · completion={u.completion_tokens} · total={u.total_tokens}"
+                )
         except Exception as e:  # noqa: BLE001
             st.error(f"Bỏ qua reasoning — kiểm tra OPENAI_API_KEY.\n\n{type(e).__name__}: {e}")
 
